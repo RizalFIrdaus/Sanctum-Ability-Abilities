@@ -44,12 +44,21 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Berhasil Login',
-                    'data' => $user,
-                    'token' => $user->createToken($user->name)->plainTextToken
-                ]);
+                if ($user->role == 'admin') {
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Berhasil Login',
+                        'data' => $user,
+                        'token' => $user->createToken($user->name, ['update'])->plainTextToken
+                    ]);
+                } else {
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Berhasil Login',
+                        'data' => $user,
+                        'token' => $user->createToken($user->name, ['read'])->plainTextToken
+                    ]);
+                }
             }
             return response()->error('Password salah!');
         }
@@ -66,9 +75,25 @@ class AuthController extends Controller
     }
     public function about(Request $request)
     {
-        return response()->json([
-            'status' => true,
-            'data' => $request->user()
-        ]);
+        // dd($request->user()->tokenCan('update'));
+        if ($request->user()->tokenCan('update')) {
+            $request->validate([
+                'name' => 'required|min:3|max:20'
+            ]);
+            $request->user()->update([
+                'name' => $request->name
+            ]);
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Berhasil Ditambahkan',
+                'data' => $request->user()
+            ]);
+        }
+        if ($request->user()->tokenCan('read')) {
+            return response()->json([
+                'status' => true,
+                'data' => $request->user()
+            ]);
+        }
     }
 }
