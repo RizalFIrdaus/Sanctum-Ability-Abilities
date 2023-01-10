@@ -38,4 +38,27 @@ class AuthController extends Controller
             'data' => $user
         ]);
     }
+
+    public function login(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            if (Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Berhasil Login',
+                    'data' => $user,
+                    'token' => $user->createToken($user->name)->plainTextToken
+                ]);
+            }
+            return response()->json([
+                'status' => false,
+                'message' => 'Password salah!'
+            ]);
+        }
+        return response()->json([
+            'status' => false,
+            'message' => 'Email belum terdaftar'
+        ]);
+    }
 }
