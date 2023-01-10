@@ -49,7 +49,7 @@ class AuthController extends Controller
                         'status' => true,
                         'message' => 'Berhasil Login',
                         'data' => $user,
-                        'token' => $user->createToken($user->name, ['update'])->plainTextToken
+                        'token' => $user->createToken($user->name, ['update', 'read'])->plainTextToken
                     ]);
                 } else {
                     return response()->json([

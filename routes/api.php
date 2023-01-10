@@ -24,5 +24,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 });
 
+Route::middleware(['auth:sanctum', 'abilities:update,read'])->group(function () {
+    Route::get('admin', function () {
+        return response()->json([
+            'status' => true,
+            'message' => 'Kamu admin'
+        ]);
+    });
+});
+
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
