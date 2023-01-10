@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Http;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Http::macro('error', function ($message) {
+        Response::macro('error', function ($message) {
             return response()->json([
                 'status' => false,
                 'message' => $message

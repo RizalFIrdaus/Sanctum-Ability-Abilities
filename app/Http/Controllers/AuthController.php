@@ -51,14 +51,24 @@ class AuthController extends Controller
                     'token' => $user->createToken($user->name)->plainTextToken
                 ]);
             }
-            return response()->json([
-                'status' => false,
-                'message' => 'Password salah!'
-            ]);
+            return response()->error('Password salah!');
         }
+        return response()->error('Email belum terdaftar');
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
         return response()->json([
-            'status' => false,
-            'message' => 'Email belum terdaftar'
+            'status' => true,
+            'message' => 'Berhasil Logout'
+        ]);
+    }
+    public function about(Request $request)
+    {
+        return response()->json([
+            'status' => true,
+            'data' => $request->user()
         ]);
     }
 }
